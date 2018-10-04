@@ -19,7 +19,9 @@ public class LeaderFlock : MonoBehaviour {
             strength1 = avoid_collisions(a);
             strength2 = match_velocity(a);
             strength3 = flock_to_center(a);
+            a.GetComponent<Rigidbody2D>().velocity = a.GetComponent<Rigidbody2D>().velocity + strength1 + strength2 + strength3;
         }
+
 	}
     public Vector2 avoid_collisions(GameObject b) {
         return new Vector2(0,0);
@@ -34,5 +36,12 @@ public class LeaderFlock : MonoBehaviour {
     {
         return new Vector2(0, 0);
 
+    }
+    public void coneCheck(GameObject b) {
+        
+    }
+    public void collisionPrediction(GameObject b)
+    {
+        
     }
 }
