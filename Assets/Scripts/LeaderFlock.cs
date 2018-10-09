@@ -8,7 +8,8 @@ public class LeaderFlock : MonoBehaviour {
 
 	public float seperationConstant;
 	public float closeEnoughDistance;
-	public float maxSpeed; //Could be changed to maxAcceleration
+	public float maxSpeed;
+	public float maxAcceleration;
 	// Use this for initialization
 	void Start () {
         flock = GameObject.FindGameObjectsWithTag("BOID");
@@ -22,7 +23,10 @@ public class LeaderFlock : MonoBehaviour {
             Vector2 strength2 = match_velocity(a);
             Vector2 strength3 = flock_to_center(a);
 			Rigidbody2D rb = a.GetComponent<Rigidbody2D> ();
-
+			Vector2 acceleration = strength1 + strength2 + strength3;
+			if (acceleration.magnitude > maxAcceleration) {
+				acceleration = maxAcceleration * acceleration.normalized;
+			}
 			rb.velocity = a.GetComponent<Rigidbody2D>().velocity + strength1 + strength2 + strength3;
 			if (rb.velocity.magnitude > maxSpeed) {
 				rb.velocity = maxSpeed * rb.velocity.normalized;
@@ -39,7 +43,7 @@ public class LeaderFlock : MonoBehaviour {
 		foreach (GameObject a in flock){
 			
 			if (a != b) {
-				float strength = Mathf.Min (seperationConstant / Vector3.Distance (a.transform.position, b.transform.position), maxSpeed);
+				float strength = Mathf.Min (seperationConstant / Vector3.Distance (a.transform.position, b.transform.position), maxAcceleration);
 				seperation += strength * (b.transform.position - a.transform.position).normalized;
 			}
 		}
