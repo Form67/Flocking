@@ -8,6 +8,8 @@ public class LeaderFlock : MonoBehaviour {
     public Vector2 strength2;
     public Vector2 strength3;
 
+	public float seperationConstant;
+	public float maxSpeed; //Could be changed to maxAcceleration
 	// Use this for initialization
 	void Start () {
         flock = GameObject.FindGameObjectsWithTag("BOID");
@@ -24,7 +26,9 @@ public class LeaderFlock : MonoBehaviour {
 
 	}
     public Vector2 avoid_collisions(GameObject b) {
-        return new Vector2(0,0);
+		float strength = Mathf.Min (seperationConstant / Vector3.Distance (transform.position, b.transform.position), maxSpeed);
+
+		return strength * (transform.position - b.transform.position).normalized;
 
     }
     public Vector2 match_velocity(GameObject b)
