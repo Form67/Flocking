@@ -74,6 +74,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0918b6001da230049899b5bc3867d645, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  flockSize: 20
+  flockPrefab: {fileID: 1600261763185888, guid: 8656f6560ba36bd498b717d75005ae2b,
+    type: 2}
+  initialSeperation: 0.3
 --- !u!114 &114307880941508142
 MonoBehaviour:
   m_ObjectHideFlags: 1

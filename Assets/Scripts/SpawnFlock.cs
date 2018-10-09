@@ -7,7 +7,7 @@ public class SpawnFlock : MonoBehaviour {
 	public GameObject flockPrefab;
 	public float initialSeperation;
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		for(int i = 0; i < flockSize; i++){
 			GameObject flockInstance = Instantiate (flockPrefab);
 			Vector3 position = Vector3.zero;

@@ -229,22 +229,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 114048690270462332, guid: 4465025e7481bbd4181dc11a152d185f,
-        type: 2}
-      propertyPath: flockSize
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 114048690270462332, guid: 4465025e7481bbd4181dc11a152d185f,
-        type: 2}
-      propertyPath: initialSeperation
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 114048690270462332, guid: 4465025e7481bbd4181dc11a152d185f,
-        type: 2}
-      propertyPath: flockPrefab
-      value: 
-      objectReference: {fileID: 1600261763185888, guid: 8656f6560ba36bd498b717d75005ae2b,
-        type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4465025e7481bbd4181dc11a152d185f, type: 2}
   m_IsPrefabAsset: 0
