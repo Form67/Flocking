@@ -31,32 +31,41 @@ public class LeaderFlock : MonoBehaviour {
 			if (rb.velocity.magnitude > maxSpeed) {
 				rb.velocity = maxSpeed * rb.velocity.normalized;
 			}
+			changeOrientationOfFollower (a);
         }
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
 		mousePosition.z = 0;
 		instantaneousVelocity = mousePosition - transform.position;
+		changeLeadOrientation ();
 		transform.position = mousePosition;
 
 	}
     public Vector2 avoid_collisions(GameObject b) {
 		Vector3 seperation = Vector2.zero;
+		float amountOfCloseAgents = 0;
 		foreach (GameObject a in flock){
-			
-			if (a != b) {
-				float strength = Mathf.Min (seperationConstant / Vector3.Distance (a.transform.position, b.transform.position), maxAcceleration);
+			float distance = Vector3.Distance (a.transform.position, b.transform.position);
+			if (a != b && distance < closeEnoughDistance) {
+				float strength = Mathf.Min (seperationConstant / distance, maxAcceleration);
 				seperation += strength * (b.transform.position - a.transform.position).normalized;
+				amountOfCloseAgents++;
 			}
 		}
-		
-		float strengthFromLeader = Mathf.Min (seperationConstant / Vector3.Distance (transform.position, b.transform.position), maxSpeed);
-		seperation += strengthFromLeader * (b.transform.position - transform.position).normalized;
+		float distanceToLead = Vector3.Distance(transform.position, b.transform.position);
+		if(distanceToLead < closeEnoughDistance){
+			float strengthFromLeader = Mathf.Min (seperationConstant / distanceToLead, maxAcceleration);
+			seperation += strengthFromLeader * (b.transform.position - transform.position).normalized;
+			amountOfCloseAgents++;
+		}
+		if (amountOfCloseAgents > 0) {
+			amountOfCloseAgents = 1 / amountOfCloseAgents;
+			seperation = amountOfCloseAgents * seperation;
+		}
 		return new Vector2(seperation.x, seperation.y);
 
     }
     public Vector2 match_velocity(GameObject b)
     {
-		
-
 		return instantaneousVelocity;
 
     }
@@ -66,6 +75,31 @@ public class LeaderFlock : MonoBehaviour {
 		return (transform.position - b.transform.position);
 
     }
+
+	public void changeLeadOrientation(){
+		float zRotation = Mathf.Atan2 (-instantaneousVelocity.x, instantaneousVelocity.y);
+		transform.eulerAngles = new Vector3 (0, 0, Mathf.Rad2Deg * zRotation);
+	}
+
+	public void changeOrientationOfFollower(GameObject b){
+		float totalAngle = 0;
+		int amountOfCloseAgents = 0;
+		foreach (GameObject a in flock) {
+			if (a != b && Vector3.Distance (a.transform.position, b.transform.position) < closeEnoughDistance) {
+				totalAngle += a.transform.eulerAngles.z;
+				amountOfCloseAgents++;
+			}
+		}
+		if (Vector3.Distance (transform.position, b.transform.position) < closeEnoughDistance) {	
+			totalAngle += transform.eulerAngles.z;
+			amountOfCloseAgents++;
+		}
+		if (amountOfCloseAgents > 0) {
+			totalAngle /= (float)amountOfCloseAgents;
+			b.transform.eulerAngles = new Vector3 (0, 0, totalAngle);
+		}
+	}
+
     public void coneCheck(GameObject b) {
         
     }
