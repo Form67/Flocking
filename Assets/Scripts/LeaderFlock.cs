@@ -79,6 +79,7 @@ public class LeaderFlock : MonoBehaviour {
 	public void changeLeadOrientation(){
 		float zRotation = Mathf.Atan2 (-instantaneousVelocity.x, instantaneousVelocity.y);
 		transform.eulerAngles = new Vector3 (0, 0, Mathf.Rad2Deg * zRotation);
+
 	}
 
 	public void changeOrientationOfFollower(GameObject b){
@@ -88,11 +89,17 @@ public class LeaderFlock : MonoBehaviour {
 			if (a != b && Vector3.Distance (a.transform.position, b.transform.position) < closeEnoughDistance) {
 				totalAngle += a.transform.eulerAngles.z;
 				amountOfCloseAgents++;
+				if (a.transform.eulerAngles.z > 180) {
+					totalAngle -= 360.0f;
+				}
 			}
 		}
 		if (Vector3.Distance (transform.position, b.transform.position) < closeEnoughDistance) {	
 			totalAngle += transform.eulerAngles.z;
 			amountOfCloseAgents++;
+			if (transform.eulerAngles.z > 180) {
+				totalAngle -= 360.0f;
+			}
 		}
 		if (amountOfCloseAgents > 0) {
 			totalAngle /= (float)amountOfCloseAgents;
