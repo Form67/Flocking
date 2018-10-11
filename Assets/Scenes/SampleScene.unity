@@ -232,7 +232,12 @@ Prefab:
     - target: {fileID: 114307880941508142, guid: 4465025e7481bbd4181dc11a152d185f,
         type: 2}
       propertyPath: maxAcceleration
-      value: 2.45
+      value: 5.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 114307880941508142, guid: 4465025e7481bbd4181dc11a152d185f,
+        type: 2}
+      propertyPath: closeEnoughDistance
+      value: 1.83
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4465025e7481bbd4181dc11a152d185f, type: 2}

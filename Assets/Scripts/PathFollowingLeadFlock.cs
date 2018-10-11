@@ -157,6 +157,6 @@ public class PathFollowingLeadFlock : LeaderFlock {
 	Vector2 DynamicEvade(Vector3 position, Vector3 target) {
 		Vector2 linearAcc = position - target;
 
-		return evasionWeight * linearAcc;
+		return maxAcceleration * linearAcc.normalized;
 	}
 }
