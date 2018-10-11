@@ -13,8 +13,7 @@ public class PathFollowingLeadFlock : LeaderFlock {
 	public bool isConeCheck;
 	public bool isCollisionPrediction;
 	public float evasionWeight;
-	static int amountOfAgents = 0;
-	public int id;
+
 	List<Vector3> originalPositions;
 
 	void Start(){
@@ -28,8 +27,7 @@ public class PathFollowingLeadFlock : LeaderFlock {
 		foreach (GameObject f in flock) {
 			originalPositions.Add (f.transform.position);
 		}
-		id = amountOfAgents;
-		amountOfAgents++;
+
 	}
 
 	void Update(){
