@@ -12,8 +12,9 @@ public class PathFollowingLeadFlock : LeaderFlock {
 
 	public bool isConeCheck;
 	public bool isCollisionPrediction;
-
-
+	public float evasionWeight;
+	static int amountOfAgents = 0;
+	public int id;
 	List<Vector3> originalPositions;
 
 	void Start(){
@@ -27,15 +28,26 @@ public class PathFollowingLeadFlock : LeaderFlock {
 		foreach (GameObject f in flock) {
 			originalPositions.Add (f.transform.position);
 		}
+		id = amountOfAgents;
+		amountOfAgents++;
 	}
 
 	void Update(){
 		manageFlock ();
-		PathFollowing (path);
+		Vector2 acceleration = PathFollowing (path) + getLeadAcceleration();
+
+		if (acceleration.magnitude > maxAcceleration) {
+			acceleration = acceleration * maxAcceleration;
+		}
+		rbody.velocity += acceleration;
+		if (rbody.velocity.magnitude > maxSpeed) {
+			rbody.velocity = rbody.velocity.normalized * maxSpeed;
+		}
+		transform.eulerAngles = new Vector3 (0, 0, GetNewOrientation () * Mathf.Rad2Deg);
 		instantaneousVelocity = rbody.velocity;
 	}
 
-	void PathFollowing(Path p){
+	Vector2 PathFollowing(Path p){
 		Vector3 closestPoint = p.linePoints[0];
 		int closestIndex = 0;
 
@@ -51,23 +63,15 @@ public class PathFollowingLeadFlock : LeaderFlock {
 			targetIndex = p.linePoints.Count - 1;
 		}
 
-		DynamicSeek (p.linePoints [targetIndex]);
-		transform.eulerAngles = new Vector3 (0, 0, GetNewOrientation () * Mathf.Rad2Deg);
+		return DynamicSeek (p.linePoints [targetIndex]);
+
 	}
 
-	void DynamicSeek(Vector3 target)
+	Vector2 DynamicSeek(Vector3 target)
 	{
-		Vector2 linear_acc = target - transform.position;
-		if (linear_acc.magnitude > maxAcceleration) {
-			linear_acc = linear_acc.normalized * maxAcceleration;
-		}
+		Vector2 linearAcc = target - transform.position;
+		return linearAcc;
 
-		rbody.velocity += linear_acc;
-
-
-		if (rbody.velocity.magnitude > maxSpeed) {
-			rbody.velocity = rbody.velocity.normalized * maxSpeed;
-		}
 	}
 
 	float GetNewOrientation() {
@@ -84,16 +88,26 @@ public class PathFollowingLeadFlock : LeaderFlock {
 		}
 	}
 
-	public override void manageIndividualUnit(GameObject a){
-		Rigidbody2D rb = a.GetComponent<Rigidbody2D> ();
+	Vector2 getLeadAcceleration() {
+		Vector2 acceleration = Vector2.zero;
 		if (isConeCheck) {
-			rb.velocity += coneCheck (a);
+			acceleration += coneCheck (gameObject);
 		}
 		if (isCollisionPrediction) {
-			rb.velocity += collisionPrediction (a);
+			acceleration += collisionPrediction (gameObject);
 		}
-		base.manageIndividualUnit (a);
+		return acceleration;
+	}
 
+	public override Vector2 getAcceleration(GameObject a){
+		Vector2 acceleration = base.getAcceleration (a);
+		if (isConeCheck) {
+			acceleration += coneCheck (a);
+		}
+		if (isCollisionPrediction) {
+			acceleration += collisionPrediction (a);
+		}
+		return acceleration;
 
 	}
 
@@ -105,20 +119,23 @@ public class PathFollowingLeadFlock : LeaderFlock {
 		GameObject[] otherAgents = GameObject.FindGameObjectsWithTag ("BOID");
 
 		GameObject closestCollidingAgent = null;
-		float tClosest = 0;
+		float tClosest = float.MaxValue;
 
 		Vector2 ourVelocity = b.GetComponent<Rigidbody2D> ().velocity;
 
 		foreach (GameObject agent in otherAgents) {
-			if (Vector3.Distance (agent.transform.position, b.transform.position) < closeEnoughDistance) {
-				Vector3 distanceVector = agent.transform.position - b.transform.position;
-				Vector2 dp = new Vector2 (distanceVector.x, distanceVector.y);
+			if (Vector3.Distance (agent.transform.position, b.transform.position) < closeEnoughDistance && b != agent) {
+				Vector2 dp = agent.transform.position - b.transform.position;
 
 				Vector2 theirVelocity = agent.GetComponent<Rigidbody2D> ().velocity;
 				Vector2 dv = theirVelocity - ourVelocity;
+				if (theirVelocity.magnitude == 0) {
+					continue;
+				}
 
-				float t = -(Vector2.Dot (dp, dv) / Mathf.Pow (dv.magnitude, 2));
-				if (t > tClosest) {
+				float t = (-Vector2.Dot (dp, dv) / Mathf.Pow (dv.magnitude, 2));
+
+				if (t < tClosest && t > 0) {
 					tClosest = t;
 					closestCollidingAgent = agent;
 				}
@@ -130,8 +147,18 @@ public class PathFollowingLeadFlock : LeaderFlock {
 			Vector3 predictedPosition = b.transform.position + tClosest * ourVelocity3D;
 			Vector3 theirVelocity3D = closestCollidingAgent.GetComponent<Rigidbody2D> ().velocity;
 			Vector3 targetPredictedPosition = closestCollidingAgent.transform.position + tClosest * theirVelocity3D;
+
+			return DynamicEvade (predictedPosition, targetPredictedPosition);
+
 		}
 
 		return Vector2.zero;
+	}
+
+
+	Vector2 DynamicEvade(Vector3 position, Vector3 target) {
+		Vector2 linearAcc = position - target;
+
+		return evasionWeight * linearAcc;
 	}
 }
