@@ -112,6 +112,7 @@ public class PathFollowingLeadFlock : LeaderFlock {
     public Vector2 coneCheck(GameObject b) {
         GameObject smallestDistance = null;
         float smallestDistanceAmount = 10000;
+        Vector2 ourVelocity = b.GetComponent<Rigidbody2D>().velocity;
         foreach (GameObject g in otherAgents) {
             if (g != b) {
                 if (Vector3.Distance(g.transform.position, b.transform.position) < closeEnoughDistance)
@@ -120,13 +121,24 @@ public class PathFollowingLeadFlock : LeaderFlock {
                         if (Vector3.Distance(g.transform.position, b.transform.position) < smallestDistanceAmount) {
                             smallestDistance = g;
                             smallestDistanceAmount = Vector3.Distance(g.transform.position, b.transform.position);
+                            Vector2 theirVelocity = g.GetComponent<Rigidbody2D>().velocity;
                         }
                     }
                 }
             }
            
         }
-        return Vector2.zero;
+        if (smallestDistance != null)
+        {
+
+            Vector3 ourVelocity3D = ourVelocity;
+            Vector3 predictedPosition = b.transform.position + smallestDistanceAmount * ourVelocity3D;
+            Vector3 theirVelocity3D = smallestDistance.GetComponent<Rigidbody2D>().velocity;
+            Vector3 targetPredictedPosition = smallestDistance.transform.position + smallestDistanceAmount * theirVelocity3D;
+
+            return DynamicEvade(predictedPosition, targetPredictedPosition);
+        }
+            return Vector2.zero;
     }
 
 	public Vector2 collisionPrediction(GameObject b) {
