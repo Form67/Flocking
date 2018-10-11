@@ -58,6 +58,10 @@ public class RayCastMovement : MonoBehaviour {
             Seek();
         }
 
+        float zRotation = Mathf.Atan2(-GetComponent<Rigidbody2D>().velocity.x, GetComponent<Rigidbody2D>().velocity.y);
+        transform.eulerAngles = new Vector3(0, 0, Mathf.Rad2Deg * zRotation);
+        
+
     }
     public void Seek() 
         {
