@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class LeaderFlock : MonoBehaviour {
-    public GameObject[] flock;
-	Vector2 instantaneousVelocity;
+    protected GameObject[] flock;
+	protected Vector2 instantaneousVelocity;
 
 	public float seperationConstant;
 	public float closeEnoughDistance;
@@ -12,16 +12,27 @@ public class LeaderFlock : MonoBehaviour {
 	public float maxAcceleration;
 	// Use this for initialization
 	void Start () {
-        flock = GameObject.FindGameObjectsWithTag("BOID");
+		flock = GetComponent<SpawnFlock> ().flockList.ToArray();
 		instantaneousVelocity = Vector2.zero;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        foreach (GameObject a in flock) {
-            Vector2 strength1 = avoid_collisions(a);
-            Vector2 strength2 = match_velocity(a);
-            Vector2 strength3 = flock_to_center(a);
+		manageFlock ();
+		Vector3 mousePosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+		mousePosition.z = 0;
+		instantaneousVelocity = mousePosition - transform.position;
+		changeLeadOrientation ();
+		transform.position = mousePosition;
+
+	}
+
+
+	public void manageFlock(){
+		foreach (GameObject a in flock) {
+			Vector2 strength1 = avoid_collisions(a);
+			Vector2 strength2 = match_velocity(a);
+			Vector2 strength3 = flock_to_center(a);
 			Rigidbody2D rb = a.GetComponent<Rigidbody2D> ();
 			Vector2 acceleration = strength1 + strength2 + strength3;
 			if (acceleration.magnitude > maxAcceleration) {
@@ -32,14 +43,10 @@ public class LeaderFlock : MonoBehaviour {
 				rb.velocity = maxSpeed * rb.velocity.normalized;
 			}
 			changeOrientationOfFollower (a);
-        }
-		Vector3 mousePosition = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-		mousePosition.z = 0;
-		instantaneousVelocity = mousePosition - transform.position;
-		changeLeadOrientation ();
-		transform.position = mousePosition;
-
+		}
 	}
+
+
     public Vector2 avoid_collisions(GameObject b) {
 		Vector3 seperation = Vector2.zero;
 		float amountOfCloseAgents = 0;
