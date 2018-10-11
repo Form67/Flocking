@@ -13,7 +13,7 @@ public class PathFollowingLeadFlock : LeaderFlock {
 	public bool isConeCheck;
 	public bool isCollisionPrediction;
 	public float evasionWeight;
-
+    GameObject[] otherAgents;
 	List<Vector3> originalPositions;
 
 	void Start(){
@@ -27,7 +27,7 @@ public class PathFollowingLeadFlock : LeaderFlock {
 		foreach (GameObject f in flock) {
 			originalPositions.Add (f.transform.position);
 		}
-
+        otherAgents = GameObject.FindGameObjectsWithTag("BOID");
 	}
 
 	void Update(){
@@ -109,12 +109,28 @@ public class PathFollowingLeadFlock : LeaderFlock {
 
 	}
 
-	public Vector2 coneCheck(GameObject b) {
-		return Vector2.zero;
-	}
+    public Vector2 coneCheck(GameObject b) {
+        GameObject smallestDistance = null;
+        float smallestDistanceAmount = 10000;
+        foreach (GameObject g in otherAgents) {
+            if (g != b) {
+                if (Vector3.Distance(g.transform.position, b.transform.position) < closeEnoughDistance)
+                {
+                    if (Vector3.Angle(g.transform.position, b.transform.position) < 50) {
+                        if (Vector3.Distance(g.transform.position, b.transform.position) < smallestDistanceAmount) {
+                            smallestDistance = g;
+                            smallestDistanceAmount = Vector3.Distance(g.transform.position, b.transform.position);
+                        }
+                    }
+                }
+            }
+           
+        }
+        return Vector2.zero;
+    }
 
 	public Vector2 collisionPrediction(GameObject b) {
-		GameObject[] otherAgents = GameObject.FindGameObjectsWithTag ("BOID");
+		
 
 		GameObject closestCollidingAgent = null;
 		float tClosest = float.MaxValue;
