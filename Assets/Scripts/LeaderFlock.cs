@@ -10,10 +10,13 @@ public class LeaderFlock : MonoBehaviour {
 	public float closeEnoughDistance;
 	public float maxSpeed;
 	public float maxAcceleration;
+
+
 	// Use this for initialization
 	void Start () {
 		flock = GetComponent<SpawnFlock> ().flockList.ToArray();
 		instantaneousVelocity = Vector2.zero;
+
 	}
 	
 	// Update is called once per frame
@@ -114,11 +117,5 @@ public class LeaderFlock : MonoBehaviour {
 		}
 	}
 
-    public void coneCheck(GameObject b) {
-        
-    }
-    public void collisionPrediction(GameObject b)
-    {
-        
-    }
+    
 }

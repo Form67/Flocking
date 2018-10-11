@@ -10,10 +10,23 @@ public class PathFollowingLeadFlock : LeaderFlock {
 
 	Rigidbody2D rbody;
 
+	public bool isConeCheck;
+	public bool isCollisionPrediction;
+
+
+	List<Vector3> originalPositions;
+
 	void Start(){
 		flock = GetComponent<SpawnFlock> ().flockList.ToArray();
 		path = pathObject.GetComponent<Path> ();
 		rbody = GetComponent<Rigidbody2D> ();
+		isConeCheck = true;
+		isCollisionPrediction = false;
+		originalPositions = new List<Vector3> ();
+		originalPositions.Add (transform.position);
+		foreach (GameObject f in flock) {
+			originalPositions.Add (f.transform.position);
+		}
 	}
 
 	void Update(){
@@ -62,5 +75,20 @@ public class PathFollowingLeadFlock : LeaderFlock {
 			return Mathf.Atan2 (-rbody.velocity.x, rbody.velocity.y);
 		}
 		return transform.eulerAngles.z * Mathf.Deg2Rad;
+	}
+
+	public void resetToOriginalPosition(){
+		transform.position = originalPositions [0];
+		for (int i = 1; i < originalPositions.Count; ++i) {
+			flock [i - 1].transform.position = originalPositions [i];
+		}
+	}
+
+	public void coneCheck(GameObject b) {
+
+	}
+
+	public void collisionPrediction(GameObject b) {
+
 	}
 }
