@@ -33,20 +33,24 @@ public class LeaderFlock : MonoBehaviour {
 
 	public void manageFlock(){
 		foreach (GameObject a in flock) {
-			Vector2 strength1 = avoid_collisions(a);
-			Vector2 strength2 = match_velocity(a);
-			Vector2 strength3 = flock_to_center(a);
-			Rigidbody2D rb = a.GetComponent<Rigidbody2D> ();
-			Vector2 acceleration = strength1 + strength2 + strength3;
-			if (acceleration.magnitude > maxAcceleration) {
-				acceleration = maxAcceleration * acceleration.normalized;
-			}
-			rb.velocity = a.GetComponent<Rigidbody2D>().velocity + strength1 + strength2 + strength3;
-			if (rb.velocity.magnitude > maxSpeed) {
-				rb.velocity = maxSpeed * rb.velocity.normalized;
-			}
-			changeOrientationOfFollower (a);
+			manageIndividualUnit (a);
 		}
+	}
+
+	public virtual void manageIndividualUnit(GameObject a){
+		Vector2 strength1 = avoid_collisions(a);
+		Vector2 strength2 = match_velocity(a);
+		Vector2 strength3 = flock_to_center(a);
+		Rigidbody2D rb = a.GetComponent<Rigidbody2D> ();
+		Vector2 acceleration = strength1 + strength2 + strength3;
+		if (acceleration.magnitude > maxAcceleration) {
+			acceleration = maxAcceleration * acceleration.normalized;
+		}
+		rb.velocity += strength1 + strength2 + strength3;
+		if (rb.velocity.magnitude > maxSpeed) {
+			rb.velocity = maxSpeed * rb.velocity.normalized;
+		}
+		changeOrientationOfFollower (a);
 	}
 
 

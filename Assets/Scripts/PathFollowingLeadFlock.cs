@@ -84,11 +84,54 @@ public class PathFollowingLeadFlock : LeaderFlock {
 		}
 	}
 
-	public void coneCheck(GameObject b) {
+	public override void manageIndividualUnit(GameObject a){
+		Rigidbody2D rb = a.GetComponent<Rigidbody2D> ();
+		if (isConeCheck) {
+			rb.velocity += coneCheck (a);
+		}
+		if (isCollisionPrediction) {
+			rb.velocity += collisionPrediction (a);
+		}
+		base.manageIndividualUnit (a);
+
 
 	}
 
-	public void collisionPrediction(GameObject b) {
+	public Vector2 coneCheck(GameObject b) {
+		return Vector2.zero;
+	}
 
+	public Vector2 collisionPrediction(GameObject b) {
+		GameObject[] otherAgents = GameObject.FindGameObjectsWithTag ("BOID");
+
+		GameObject closestCollidingAgent = null;
+		float tClosest = 0;
+
+		Vector2 ourVelocity = b.GetComponent<Rigidbody2D> ().velocity;
+
+		foreach (GameObject agent in otherAgents) {
+			if (Vector3.Distance (agent.transform.position, b.transform.position) < closeEnoughDistance) {
+				Vector3 distanceVector = agent.transform.position - b.transform.position;
+				Vector2 dp = new Vector2 (distanceVector.x, distanceVector.y);
+
+				Vector2 theirVelocity = agent.GetComponent<Rigidbody2D> ().velocity;
+				Vector2 dv = theirVelocity - ourVelocity;
+
+				float t = -(Vector2.Dot (dp, dv) / Mathf.Pow (dv.magnitude, 2));
+				if (t > tClosest) {
+					tClosest = t;
+					closestCollidingAgent = agent;
+				}
+			} 
+		}
+		if (closestCollidingAgent != null) {
+
+			Vector3 ourVelocity3D = ourVelocity;
+			Vector3 predictedPosition = b.transform.position + tClosest * ourVelocity3D;
+			Vector3 theirVelocity3D = closestCollidingAgent.GetComponent<Rigidbody2D> ().velocity;
+			Vector3 targetPredictedPosition = closestCollidingAgent.transform.position + tClosest * theirVelocity3D;
+		}
+
+		return Vector2.zero;
 	}
 }
