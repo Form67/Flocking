@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ChangeModesScript : MonoBehaviour {
-	string[] modes = {"Cone Check", "Collision Prediction", "Both"};
+	string[] modes = {"Cone Check", "Collision Prediction", "Both", "Neither"};
 	int currIndex;
 	Text text;
 
@@ -17,7 +17,7 @@ public class ChangeModesScript : MonoBehaviour {
 	}
 	
 	public void ChangeMode() {
-		currIndex = currIndex == 2 ? 0 : currIndex + 1;
+		currIndex = currIndex == 3 ? 0 : currIndex + 1;
 		text.text = modes [currIndex];
 
 		foreach (GameObject a in pathFollowingAgents) {
@@ -34,6 +34,10 @@ public class ChangeModesScript : MonoBehaviour {
 				case 2:
 					script.isConeCheck = true;
 					script.isCollisionPrediction = true;
+					break;
+				case 3:
+					script.isConeCheck = false;
+					script.isCollisionPrediction = false;
 					break;
 				default:
 					break;
