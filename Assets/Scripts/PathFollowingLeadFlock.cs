@@ -89,7 +89,7 @@ public class PathFollowingLeadFlock : LeaderFlock {
 	Vector2 getLeadAcceleration() {
 		Vector2 acceleration = Vector2.zero;
 		if (isConeCheck) {
-			acceleration += coneCheck (gameObject);
+			acceleration += coneCheck (gameObject) /2.2f;
 		}
 		if (isCollisionPrediction) {
 			acceleration += collisionPrediction (gameObject);

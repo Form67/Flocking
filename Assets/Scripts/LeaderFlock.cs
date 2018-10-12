@@ -16,7 +16,6 @@ public class LeaderFlock : MonoBehaviour {
 	void Start () {
 		flock = GetComponent<SpawnFlock> ().flockList.ToArray();
 		instantaneousVelocity = Vector2.zero;
-
 	}
 	
 	// Update is called once per frame
@@ -29,8 +28,6 @@ public class LeaderFlock : MonoBehaviour {
 		transform.position = mousePosition;
 
 	}
-
-
 	public void manageFlock(){
 		foreach (GameObject a in flock) {
 			manageIndividualUnit (a);
@@ -38,7 +35,6 @@ public class LeaderFlock : MonoBehaviour {
 	}
 
 	public void manageIndividualUnit(GameObject a){
-		
 		Rigidbody2D rb = a.GetComponent<Rigidbody2D> ();
 		Vector2 acceleration = getAcceleration(a);
 		if (acceleration.magnitude > maxAcceleration) {

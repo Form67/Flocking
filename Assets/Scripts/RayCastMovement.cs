@@ -31,7 +31,6 @@ public class RayCastMovement : MonoBehaviour {
         Debug.DrawRay(transform.position, raycastDistance * new Vector2(Mathf.Sin(Mathf.Asin(transform.up.x) - .3f), Mathf.Cos(Mathf.Acos(transform.up.y) - .3f)), Color.red);
         if (arbitrationCooldown <= 0 &&arbitrationWinner <= 1)
         {
-            
             RaycastHit2D hit1 = Physics2D.Raycast(transform.position,new Vector2(Mathf.Sin(Mathf.Asin(transform.up.x) + .3f), Mathf.Cos(Mathf.Acos(transform.up.y) + .3f)), raycastDistance);
             if (hit1.collider != null)
             {
